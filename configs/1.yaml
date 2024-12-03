@@ -1,0 +1,5 @@
+input_image_path: "path/to/your/input/images"
+mask_image_path: "path/to/your/mask/images"
+output_path: "path/to/store/results"
+model_checkpoint: "path/to/checkpoint/file"
+other_parameter: "value"
