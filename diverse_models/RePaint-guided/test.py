@@ -51,7 +51,7 @@ from guided_diffusion.script_util import (
     select_args,
 )  # noqa: E402
 
-
+# makes a tensor in range [-1, 1] to an 8 bit uint image 
 def toU8(sample):
     if sample is None:
         return sample
@@ -106,7 +106,9 @@ def main(conf: conf_mgt.Default_Conf, g_eta, g_dist, parallel_batch, save_interm
         if conf.classifier_use_fp16:
             classifier.convert_to_fp16()
         classifier.eval()
-
+        
+        # to compute gradients for classifier guidance
+        # adjusts the denoising steps to align with the desired outcome.
         def cond_fn(x, t, y=None, gt=None, **kwargs):
             assert y is not None
             with th.enable_grad():
@@ -170,7 +172,12 @@ def main(conf: conf_mgt.Default_Conf, g_eta, g_dist, parallel_batch, save_interm
             )
             model_kwargs["y"] = classes
 
-        sample_fn = (
+        #################################################################
+        # determines which sampling function to use based on config setting 
+        # conf.use_ddim = boolean flag ----> ddim_sample_loop / p_sample_loop
+        # p_sample_loop === the default sampling loop 
+        # ddim_sample_loop === alternative sampling method known as ddim ---> provides different sampling dynamics (faster sampling)
+        sample_fn = ( 
             diffusion.p_sample_loop if not conf.use_ddim else diffusion.ddim_sample_loop  # defults to p_sample_loop
         )
 
@@ -225,3 +232,7 @@ if __name__ == "__main__":
 
     main(conf_arg, g_eta, g_dist, args.get('parallel_batch'),
          args.get('save_intermediate'), args.get('save_suppl'), args.get('s_shift'))
+
+# the guuidance hyperparams
+# guidance distnce = D in paper
+# guidance eta = eta  in paper

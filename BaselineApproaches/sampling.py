@@ -9,7 +9,7 @@ import argparse
 from clustering import get_distance_matrix, get_ordered_distance_index_matrices, dist_from_kth_by_matrix
 from utils.utils import load_pt, set_seed, create_path
 
-
+# Computes sampling probabilities proportional to k-nearest neighbor distances
 def weights_prop_to_knn_de(distances, d, k, thresholdpercentage=0, normalize=True):
     r = dist_from_kth_by_matrix(distances, k)
     sampling_probs = pow(r, d)  # sampling probabilities before normalizing by total sum (without the constant)
